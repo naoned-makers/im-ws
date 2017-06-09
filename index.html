@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Socket.io</title>
+    </head>
+ 
+    <body>
+        <h1>Communication avec socket.io !</h1>
+<form>
+        <p><input type="button" value="Embêter le serveur" id="poke" /></p>
+        <p><input type="button" value="Lève le bras gauche" id="left_arm" /></p>
+        <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
+        <canvas id="remote" width="400" height="400"></canvas>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> 
+        <script src="/socket.io/socket.io.js"></script>
+        
+        
+        <script>
+            //console.log(location.host);
+            //console.log("sdcsdc ", ipadress, " sdckjshd");
+            var socket = io.connect('http://' + location.host);
+            socket.on('message', function(message) {
+                alert('Le serveur a un message pour vous : ' + message);
+            });
+/*document.getElementById('test').click(function () {
+  console.log('sldjvsdlhvlhsdlv')
+
+})
+            document.getElementById('poke').click(function () {
+              console.log("coucou le monde")
+                socket.emit('message', 'XXSalut serveur, ça va ?');
+            });*/
+
+            var canvas = document.getElementById("remote");
+	canvas.addEventListener("touchstart", mouse_down);
+	canvas.addEventListener("touchend", mouse_up);
+	canvas.addEventListener("touchmove", mouse_move);
+	canvas.addEventListener("mousedown", mouse_down);
+	canvas.addEventListener("mouseup", mouse_up);
+	canvas.addEventListener("mousemove", mouse_move);
+ 
+ 
+
+
+            $('#poke').click(function () {
+                socket.emit('message', 'Salut serveur, ça va ?');
+            });
+            $('#left_arm').click(function () {
+                socket.emit('mouvement', 'Je lève le bras gauche...');
+            });
+            $('#right_arm').click(function () {
+                socket.emit('mouvement', 'Je lève le bras droit...');
+            });
+var cpt = 0;
+            /*var pseudo = prompt('Quel est votre pseudo ?');
+            socket.emit('petit_nouveau', pseudo);*/
+function mouse_down()
+{
+    cpt = cpt - 1;
+    socket.emit('cpt', cpt);
+}
+function mouse_up()
+{
+    cpt = cpt + 1;
+    socket.emit('cpt', cpt);
+}
+function mouse_move()
+{
+    socket.emit('cpt', cpt);
+}
+
+
+       </script>
+</form>
+    </body>
+</html>
