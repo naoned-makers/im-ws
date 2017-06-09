@@ -1,0 +1,11 @@
+body {
+    background-color: #202020;
+}
+#touchzone {
+    background-image: url('../img/ironman-front-redux.png');
+    height: 1361px; 
+    width: 765px;
+}
+#coords {
+    color: white;
+}

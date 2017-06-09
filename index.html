@@ -2,43 +2,91 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Socket.io</title>
+        <title>Iron Man</title>
+        <link rel="stylesheet" type="text/css" href="styles/styles.css">
     </head>
  
     <body>
-        <h1>Communication avec socket.io !</h1>
-<form>
+        <div id="coords">
+            x: 0, y: 0
+            <br/>
+            status: 
+        </div>
+        <div id="touchzone"></div>
+        <!--<img id="scream" src="img/ironman-front.png" alt="Iron Man" width="800">-->
+        
+        
         <p><input type="button" value="Embêter le serveur" id="poke" /></p>
         <p><input type="button" value="Lève le bras gauche" id="left_arm" /></p>
         <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
-        <canvas id="remote" width="400" height="400"></canvas>
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> 
+        <div id="toto" img></canvas>
+        <canvas id="remote" width="400" height="400" style="border:1px solid #000000;"></canvas>        
+        <script src="fwk/jquery-1.10.1.min.js"></script> 
         <script src="/socket.io/socket.io.js"></script>
         
         
         <script>
+           /**
+                PARTIE TOUCH
+            */
+           // Get a reference to our touch-sensitive element
+            var touchzone = document.getElementById("touchzone");
+            // Add an event handler for the touchstart event
+            touchzone.addEventListener("touchstart", touchHandler, false);
+            touchzone.addEventListener("click", touchHandler, false);
+
+            function touchHandler(event) {
+                // Get a reference to our coordinates div
+                var coords = document.getElementById("coords");
+                // Write the coordinates of the touch to the div
+                let status = 'status: ';
+                let coordX;
+                let coordY;
+                if (event.type =='click') {
+                    coordX = event.clientX;
+                    coordY = event.clientY;
+                } else {
+                    coordX = touches[0].pageX;
+                    coordY = touches[0].pageY;
+                }
+
+                if (coordX > 155 && coordX < 275 && coordY > 500 && coordY < 720) {
+                    status = 'status: iron man lève le bras gauche';                        
+                }
+                if (coordX > 500 && coordX < 630 && coordY > 520 && coordY < 740) {
+                    status = 'status: iron man lève le bras droit';                        
+                }
+                if (coordX > 270 && coordX < 520 && coordY > 280 && coordY < 350) {
+                    status = 'status: iron man allume ses yeux';                        
+                }
+                coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>' + status;
+            }
+
+            /**
+                PARTIE WEBSOCKET
+            */
             //console.log(location.host);
             //console.log("sdcsdc ", ipadress, " sdckjshd");
             var socket = io.connect('http://' + location.host);
             socket.on('message', function(message) {
                 alert('Le serveur a un message pour vous : ' + message);
             });
-/*document.getElementById('test').click(function () {
-  console.log('sldjvsdlhvlhsdlv')
+            /*document.getElementById('test').click(function () {
+            console.log('sldjvsdlhvlhsdlv')
 
-})
+            })
             document.getElementById('poke').click(function () {
               console.log("coucou le monde")
                 socket.emit('message', 'XXSalut serveur, ça va ?');
             });*/
 
             var canvas = document.getElementById("remote");
-	canvas.addEventListener("touchstart", mouse_down);
-	canvas.addEventListener("touchend", mouse_up);
-	canvas.addEventListener("touchmove", mouse_move);
-	canvas.addEventListener("mousedown", mouse_down);
-	canvas.addEventListener("mouseup", mouse_up);
-	canvas.addEventListener("mousemove", mouse_move);
+            canvas.addEventListener("touchstart", mouse_down);
+            canvas.addEventListener("touchend", mouse_up);
+            canvas.addEventListener("touchmove", mouse_move);
+            canvas.addEventListener("mousedown", mouse_down);
+            canvas.addEventListener("mouseup", mouse_up);
+            canvas.addEventListener("mousemove", mouse_move);
  
  
 
@@ -55,23 +103,22 @@
 var cpt = 0;
             /*var pseudo = prompt('Quel est votre pseudo ?');
             socket.emit('petit_nouveau', pseudo);*/
-function mouse_down()
-{
-    cpt = cpt - 1;
-    socket.emit('cpt', cpt);
-}
-function mouse_up()
-{
-    cpt = cpt + 1;
-    socket.emit('cpt', cpt);
-}
-function mouse_move()
-{
-    socket.emit('cpt', cpt);
-}
+        function mouse_down()
+        {
+            cpt = cpt - 1;
+            socket.emit('cpt', cpt);
+        }
+        function mouse_up()
+        {
+            cpt = cpt + 1;
+            socket.emit('cpt', cpt);
+        }
+        function mouse_move()
+        {
+            socket.emit('cpt', cpt);
+        }
 
 
        </script>
-</form>
     </body>
 </html>
