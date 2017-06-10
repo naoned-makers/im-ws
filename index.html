@@ -11,6 +11,8 @@
             x: 0, y: 0
             <br/>
             status: 
+            <br/>
+            cpt: 
         </div>
         <div id="touchzone"></div>
         <!--<img id="scream" src="img/ironman-front.png" alt="Iron Man" width="800">-->
@@ -21,46 +23,12 @@
         <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
         <div id="toto" img></canvas>
         <canvas id="remote" width="400" height="400" style="border:1px solid #000000;"></canvas>        
-        <script src="fwk/jquery-1.10.1.min.js"></script> 
+        <script src="scripts/jquery-1.10.1.min.js"></script> 
         <script src="/socket.io/socket.io.js"></script>
+         <script src="scripts/touch.js"></script>
         
         
         <script>
-           /**
-                PARTIE TOUCH
-            */
-           // Get a reference to our touch-sensitive element
-            var touchzone = document.getElementById("touchzone");
-            // Add an event handler for the touchstart event
-            touchzone.addEventListener("touchstart", touchHandler, false);
-            touchzone.addEventListener("click", touchHandler, false);
-
-            function touchHandler(event) {
-                // Get a reference to our coordinates div
-                var coords = document.getElementById("coords");
-                // Write the coordinates of the touch to the div
-                let status = 'status: ';
-                let coordX;
-                let coordY;
-                if (event.type =='click') {
-                    coordX = event.clientX;
-                    coordY = event.clientY;
-                } else {
-                    coordX = touches[0].pageX;
-                    coordY = touches[0].pageY;
-                }
-
-                if (coordX > 155 && coordX < 275 && coordY > 500 && coordY < 720) {
-                    status = 'status: iron man lève le bras gauche';                        
-                }
-                if (coordX > 500 && coordX < 630 && coordY > 520 && coordY < 740) {
-                    status = 'status: iron man lève le bras droit';                        
-                }
-                if (coordX > 270 && coordX < 520 && coordY > 280 && coordY < 350) {
-                    status = 'status: iron man allume ses yeux';                        
-                }
-                coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>' + status;
-            }
 
             /**
                 PARTIE WEBSOCKET
@@ -100,21 +68,24 @@
             $('#right_arm').click(function () {
                 socket.emit('mouvement', 'Je lève le bras droit...');
             });
-var cpt = 0;
+
             /*var pseudo = prompt('Quel est votre pseudo ?');
             socket.emit('petit_nouveau', pseudo);*/
         function mouse_down()
         {
             cpt = cpt - 1;
+            console.log('mouse_down');
             socket.emit('cpt', cpt);
         }
         function mouse_up()
         {
             cpt = cpt + 1;
+            console.log('mouse_up');
             socket.emit('cpt', cpt);
         }
         function mouse_move()
         {
+            console.log('mouse_move');
             socket.emit('cpt', cpt);
         }
 

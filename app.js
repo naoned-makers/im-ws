@@ -20,7 +20,7 @@ app.use(express.static(__dirname + '/assets'));
 
 app.get('/', function(req, res, next){
   console.log('arrivé sur la page...');
-  res.sendFile(path.join(__dirname + '/index.html'));
+  res.sendFile(path.join(__dirname + '/index2.html'));
 });
 
 
