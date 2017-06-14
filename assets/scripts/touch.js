@@ -1,99 +1,58 @@
-let cpt = 0;
-let upWay = true;
-//let moveEngine = true;
-/**
-    PARTIE TOUCH
-*/
-// Get a reference to our touch-sensitive element
-var touchzone = document.getElementById("touchzone");
-// Add an event handler for the touchstart event
-touchzone.addEventListener("touchstart", touchHandler, false);
-//touchzone.addEventListener("touchleave", touchLeaveHandler, false);
-touchzone.addEventListener("touchend", touchEndHandler, false);
 
-touchzone.addEventListener("mousedown", touchHandler, false);
-touchzone.addEventListener("mouseup", touchEndHandler, false);
+//Usage intensif de la lib
+//https://zingchart.github.io/zingtouch/#getting-started
 
-/*function touchLeaveHandler(event) {
-    console.log('je suis dans touchLeaveHandler');
-    socket.emit('cpt', '{"cpt":1, "mvt": false}');
-    //moveEngine = false;
-}*/
-function touchEndHandler(event) {
-    console.log('je suis dans touchEndHandler');
-    socket.emit('mvtstop', '{"cpt":1, "mvt": false}');
-    //moveEngine = false;
+var zt = new ZingTouch.Region(document.body);
+var ironManContainer = document.getElementById('ironManContainer');
+var head = document.getElementById('head');
+var body = document.getElementById('body');
+var armleft = document.getElementById('armleft');
+var armright = document.getElementById('armright');
+var legleft = document.getElementById('legleft');
+var legright = document.getElementById('legright');
+
+var coords = document.getElementById('coords');
+
+zt.bind(body, 'tap', function(e){
+	//Actions here
+     coords.innerHTML = 'status: iron man allume son torse';  
+     //socket.emit('mvtstart', '{"mvt": true, "direction": "' + direction + '"}');
+}, false);
+zt.bind(head, 'tap', function(e){
+	//Actions here
+     coords.innerHTML = 'status: iron man allume ses yeux';  
+     //socket.emit('mvtstart', '{"mvt": true, "direction": "' + direction + '"}');
+}, false);
+
+var CustomPan = new ZingTouch.Pan();
+var endPan = CustomPan.end;
+CustomPan.end = function(inputs) {
+    coords.innerHTML = 'status: iron man stop sa tête';;
+    return endPan.call(this, inputs);
 }
-function touchHandler(event) {
-    event.preventDefault();
-    let doCall = false;
-    if (event instanceof TouchEvent) {
-        console.log('youpi je suis une saucisse Touch')
-    }
-    if (event instanceof MouseEvent) {
-        event.stopPropagation();
-        //console.log('youpi je suis une saucisse Mouse');
-        return;
-    }
-    console.log(event);
-    upWay = true;
-    if (event.type =='mousedown') {
-        console.log('je suis dans touchHandler sans touches');
-    } else if (event.touches[1]) {
-        upWay = false;
-        console.log('je suis dans touchHandler avec touches 1');
-    } else if (event.touches[0]) {
-        console.log('je suis dans touchHandler avec touches 0');
-    }
 
 
-    
-    //moveEngine = true;
-    
-    // Get a reference to our coordinates div
-    var coords = document.getElementById("coords");
-    // Write the coordinates of the touch to the div
-    let status = 'status: ';
-    let coordX;
-    let coordY;
-    if (event.type =='mousedown') {
-        coordX = event.clientX;
-        coordY = event.clientY;
-    } else if (event.touches[1]) {
-        coordX = event.touches[1].pageX;
-        coordY = event.touches[1].pageY;
-    } else {
-        coordX = event.touches[0].pageX;
-        coordY = event.touches[0].pageY;
+zt.bind(head,CustomPan, function(e){
+    if (e.detail.data[0].directionFromOrigin<90 || e.detail.data[0].directionFromOrigin>270){
+     coords.innerHTML = 'status: iron man bouge sa tête à droite';
+    }else{
+     coords.innerHTML = 'status: iron man bouge sa tête gauche';
+    }
+     //socket.emit('mvtstart', '{"mvt": true, "direction": "' + direction + '"}');
+}, false);
+
+zt.bind(armleft, 'pan', function(e){
+    if (e.detail.data[0].directionFromOrigin<180){
+     coords.innerHTML = 'status: iron man lève le bras gauche';
+    }else{
+     coords.innerHTML = 'status: iron man baisse le bras gauche';
     }
 
-    if (coordX > 155 && coordX < 275 && coordY > 500 && coordY < 720) {
-        status += 'iron man lève le bras gauche';
-        doCall = true;                        
+}, false);
+zt.bind(armright, 'pan', function(e){
+    if (e.detail.data[0].directionFromOrigin<180){
+     coords.innerHTML = 'status: iron man lève le bras droit';
+    }else{
+     coords.innerHTML = 'status: iron man baisse le bras droit';
     }
-    if (coordX > 500 && coordX < 630 && coordY > 520 && coordY < 740) {
-        status += 'iron man lève le bras droit';                        
-        doCall = true;
-    }
-    if (coordX > 270 && coordX < 520 && coordY > 280 && coordY < 350) {
-        status += 'iron man allume ses yeux';                        
-        doCall = true;
-    }
-    if (coordX > 350 && coordX < 430 && coordY > 540 && coordY < 600) {
-        status = 'status: iron man allume son torse';                        
-        doCall = true;
-    }
-    //while (moveEngine) {
-    let direction;
-    if (doCall) {
-        if (upWay) {
-            direction = "up";
-        } else if (event.touches[1]) {
-            diretcion = "down";
-        }
-        socket.emit('mvtstart', '{"mvt": true, "direction": "' + direction + '"}');
-        coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>' + status + '<br/>cpt: ' + cpt;
-    }//}
-
-    //socket.emit('cpt', cpt);
-}
+}, false);

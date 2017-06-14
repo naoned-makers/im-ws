@@ -2,31 +2,46 @@
 <html>
     <head>
         <meta charset="utf-8" />
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
         <title>Iron Man</title>
         <link rel="stylesheet" type="text/css" href="styles/styles.css">
     </head>
  
     <body>
         <div id="coords">
-            x: 0, y: 0
-            <br/>
             status: 
-            <br/>
-            cpt: 
         </div>
-        <div id="touchzone"></div>
-        <!--<img id="scream" src="img/ironman-front.png" alt="Iron Man" width="800">-->
-        
-        
-        <p><input type="button" value="Embêter le serveur" id="poke" /></p>
-        <p><input type="button" value="Lève le bras gauche" id="left_arm" /></p>
-        <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
-        <div id="toto" img></canvas>
-        <canvas id="remote" width="400" height="400" style="border:1px solid #000000;"></canvas>        
-        <script src="scripts/jquery-1.10.1.min.js"></script> 
+        <svg  id="ironManContainer" width="100%" height="100%" viewBox="0 0 500 800"  preserveAspectRatio="xMinYMin meet">
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <g id="head">
+                <circle cx="250" cy="100" r="100"           style="fill:rgb(200,0,0);stroke-width:3;stroke:rgb(0,0,0)" />
+                <rect x="0" y="0" width="500" height="200"  visibility="hidden" style="fill:rgb(100,100,100)"/>
+            </g>
+            <g id="body">
+            <rect x="100" y="200" width="300" height="500" style="fill:rgb(255,100,100);stroke-width:3;stroke:rgb(0,0,0)" />
+            </g>
+            <g id="armleft">
+            <rect x="0" y="200" width="100" height="300" style="fill:rgb(255,0,100);stroke-width:3;stroke:rgb(0,0,0)" />
+            </g>
+            <g id="armright">
+            <rect x="400" y="200" width="100" height="300" style="fill:rgb(255,0,100);stroke-width:3;stroke:rgb(0,0,0)" />
+            </g>
+            <g id="legleft">
+            <rect x="100" y="500" width="150" height="300" style="fill:rgb(255,100,0);stroke-width:3;stroke:rgb(0,0,0)" />
+            </g>
+            <g id="legright">
+            <rect x="250" y="500" width="150" height="300" style="fill:rgb(255,100,0);stroke-width:3;stroke:rgb(0,0,0)" />
+            </g>
+        </svg>
         <script src="/socket.io/socket.io.js"></script>
-         <script src="scripts/touch.js"></script>
-        
+        <script src="scripts/zingtouch.min.js"></script>
+        <script src="scripts/touch.js"></script>
+
         
         <script>
 
