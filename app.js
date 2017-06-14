@@ -1,52 +1,74 @@
-var http = require('http');
 var fs = require('fs');
-var express = require('express');
-var app = express();
-var server = http.createServer(app);
-var ip = require("ip");
-console.dir ( ip.address() );
+var spdy = require('spdy');
+
+var bodyParser = require('body-parser');
 var path = require('path');
-var ios = require('socket.io-express-session');
 
-/*var Session = require('express-session');
-var SessionStore = require('session-file-store')(Session);
-var session = Session({store: new SessionStore({path: __dirname+'/tmp/sessions'}), secret: 'pass', resave: true, saveUninitialized: true});
+var sseMW = require('./sse');
+var ip = require("ip");
 
+var express = require('express');
+//self signed ssl ceritificate for hostname dbuntu
+//ceate online by http://www.selfsignedcertificate.com/
+var options = {
+    key: fs.readFileSync('ssl.key'),
+    cert: fs.readFileSync('ssl.cert')
+};
+var app = express();
+//var http = require('http');
+//var server = http.createServer(app);
+var server = spdy.createServer(options, app);
 
-app.use(session);
-*/
-
-app.use(express.static(__dirname + '/assets'));
-
-app.get('/', function(req, res, next){
-  console.log('arrivé sur la page...');
-  res.sendFile(path.join(__dirname + '/index.html'));
-});
+app.use(express.static('assets'))
 
 let cpt;
-// Chargement de socket.io
-var io = require('socket.io').listen(server);
-//io.use(ios(session));
 let move;
-// ajout des event quand la connexion a eu lieu
-io.sockets.on('connection', function (socket) {
-    console.log('adresse client ' + socket.request.connection.remoteAddress);
 
-    //socket.emit('message', 'Vous êtes bien connecté !');
+//configure sseMW.sseMiddleware as function to get a stab at incoming requests, in this case by adding a Connection property to the request
+app.use(sseMW.sseMiddleware);
+// Realtime updates
+var sseClients = new sseMW.Topic();
 
-	//socket.broadcast.emit('message', 'Un autre client vient de se connecter !');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-	// Quand le serveur reçoit un signal de type "message" du client    
-    socket.on('message', function (message) {
-        console.log(socket.pseudo + ' me parle ! Il me dit : ' + message);
-    });	
-	/*socket.on('petit_nouveau', function(pseudo) {
-        socket.pseudo = pseudo;
-	});*/
-	socket.on('mouvement', function(message) {
+app.get('/', function (req, res, next) {
+    console.log('arrivé sur la page...');
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+// initial registration of SSE Client Connection 
+app.get('/sseupdates', function (req, res) {
+    var sseConnection = res.sseConnection;
+    sseConnection.setup();
+    console.log('Vous êtes bien connecté !');
+    sseConnection.send('Vous êtes bien connecté !');
+    sseClients.add(sseConnection);
+    //updateSseClients('Un autre client vient de se connecter !');
+});
+
+var m;
+//send message to all registered SSE clients
+updateSseClients = function (message) {
+    var msg = message;
+    this.m = message;
+    sseClients.forEach(
+        function (sseConnection) {
+            sseConnection.send(this.m);
+        }
+        , this // this second argument to forEach is the thisArg (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) 
+    ); //forEach
+}// updateSseClients
+
+app.post('/xhrmessage', function (req, res) {
+    var type = req.body.type;
+    var message = req.body.message;
+    if (type == 'message') {
+        console.log('socket.pseudo' + ' me parle ! Il me dit : ' + message);
+        updateSseClients('socket.pseudo' + ' me parle ! Il me dit : ' + message);
+    } else if (type == 'mouvement') {
         console.log(message);
-	});
-    socket.on('mvtstop', function(message) {
+    } else if (type == 'mvtstop') {
         let data = JSON.parse(message);
         move = data.mvt;
         console.log("j'arrete de bouger " + move);
@@ -56,9 +78,7 @@ io.sockets.on('connection', function (socket) {
         } else {
             downgrade(move);
         }
-    });
-
-    socket.on('mvtstart', function(message) {
+    } else if (type == 'mvtstop') {
         let data = JSON.parse(message);
         move = data.mvt;
         //cpt = data.cpt;
@@ -67,22 +87,23 @@ io.sockets.on('connection', function (socket) {
         } else {
             downgrade(move);
         }
-	});
+    }
+    res.end();
 });
 
 let i = 1;
 
 function upgrade(move) {
-  console.log('move : ' + move);
-  let interval = setInterval( increment, 1000);
+    console.log('move : ' + move);
+    let interval = setInterval(increment, 1000);
 }
 
 function downgrade(move) {
-  console.log('move : ' + move);
-//  let interval = setInterval( decrement, 1000);
+    console.log('move : ' + move);
+    //  let interval = setInterval( decrement, 1000);
 }
 
-function increment(){
+function increment() {
     console.log('je suis dans increment');
     if (!move) {
         return;
@@ -91,7 +112,7 @@ function increment(){
     console.log('cpt : ' + i);
 }
 
-function decrement(){
+function decrement() {
     console.log('je suis dans decrement');
     if (!move) {
         return;
@@ -100,4 +121,6 @@ function decrement(){
     console.log('cpt : ' + i);
 }
 
-server.listen(8080, ip.address());
+
+console.dir(ip.address());
+server.listen(8080);

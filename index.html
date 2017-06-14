@@ -23,30 +23,43 @@
         <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
         <div id="toto" img></canvas>
         <canvas id="remote" width="400" height="400" style="border:1px solid #000000;"></canvas>        
-        <script src="scripts/jquery-1.10.1.min.js"></script> 
-        <script src="/socket.io/socket.io.js"></script>
-         <script src="scripts/touch.js"></script>
-        
-        
+        <script src="scripts/jquery-1.10.1.min.js"></script>
+        <script src="scripts/touch.js"></script>
         <script>
-
             /**
-                PARTIE WEBSOCKET
+                PARTIE XHR SSE
             */
-            //console.log(location.host);
-            //console.log("sdcsdc ", ipadress, " sdckjshd");
-            var socket = io.connect('http://' + location.host);
+            function Socket(){
+                this.on = function(channel,handler){
+                    //TODO handle multiple channel
+                    var source = new EventSource("sseupdates");// '/sseupdates/'+channel
+                    source.onmessage = function(event) {
+                        handler(event.data);
+                    };
+                }
+                this.emit= function(channel,message){
+                    var params = 'type='+channel+'&message='+encodeURI(message)
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/xhrmessage', true);
+                    xhr.onload = function(e) {
+                        if (this.status == 200) {
+                            //console.log(this.responseText);
+                        }
+                    };
+
+
+                    //Send the proper header information along with the request
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                    xhr.send(params);
+                }
+
+            }
+            var socket = new Socket();
+
             socket.on('message', function(message) {
                 alert('Le serveur a un message pour vous : ' + message);
             });
-            /*document.getElementById('test').click(function () {
-            console.log('sldjvsdlhvlhsdlv')
-
-            })
-            document.getElementById('poke').click(function () {
-              console.log("coucou le monde")
-                socket.emit('message', 'XXSalut serveur, ça va ?');
-            });*/
 
             var canvas = document.getElementById("remote");
             canvas.addEventListener("touchstart", mouse_down);
