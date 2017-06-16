@@ -1,38 +1,37 @@
 let cpt = 0;
 let upWay = true;
-//let moveEngine = true;
+
+let MOVE_LEFT_ARM = "moveleftarm";
+let MOVE_RIGHT_ARM = "moverighttarm";
+let MOVE_LEFT_HAND = "movelefthand";
+let MOVE_RIGHT_HAND = "moverightthand";
+let MOVE_HEAD = "movehead";
+let LIGHT_EYES = "lighteyes";
+let LIGHT_TORSO = "lighttorso";
+
+let move;
+
 /**
     PARTIE TOUCH
 */
 // Get a reference to our touch-sensitive element
 var touchzone = document.getElementById("touchzone");
-// Add an event handler for the touchstart event
 touchzone.addEventListener("touchstart", touchHandler, false);
-//touchzone.addEventListener("touchleave", touchLeaveHandler, false);
 touchzone.addEventListener("touchend", touchEndHandler, false);
 
 touchzone.addEventListener("mousedown", touchHandler, false);
 touchzone.addEventListener("mouseup", touchEndHandler, false);
 
-/*function touchLeaveHandler(event) {
-    console.log('je suis dans touchLeaveHandler');
-    socket.emit('cpt', '{"cpt":1, "mvt": false}');
-    //moveEngine = false;
-}*/
 function touchEndHandler(event) {
     console.log('je suis dans touchEndHandler');
     socket.emit('mvtstop', '{"cpt":1, "mvt": false}');
-    //moveEngine = false;
 }
+
 function touchHandler(event) {
     event.preventDefault();
     let doCall = false;
-    if (event instanceof TouchEvent) {
-        console.log('youpi je suis une saucisse Touch')
-    }
     if (event instanceof MouseEvent) {
         event.stopPropagation();
-        //console.log('youpi je suis une saucisse Mouse');
         return;
     }
     console.log(event);
@@ -45,10 +44,6 @@ function touchHandler(event) {
     } else if (event.touches[0]) {
         console.log('je suis dans touchHandler avec touches 0');
     }
-
-
-    
-    //moveEngine = true;
     
     // Get a reference to our coordinates div
     var coords = document.getElementById("coords");
@@ -56,7 +51,7 @@ function touchHandler(event) {
     let status = 'status: ';
     let coordX;
     let coordY;
-    if (event.type =='mousedown') {
+    if (event.type == 'mousedown') {
         coordX = event.clientX;
         coordY = event.clientY;
     } else if (event.touches[1]) {
@@ -68,32 +63,20 @@ function touchHandler(event) {
     }
 
     if (coordX > 155 && coordX < 275 && coordY > 500 && coordY < 720) {
-        status += 'iron man lève le bras gauche';
-        doCall = true;                        
+        doEmitSocket(MOVE_LEFT_ARM, coordX, coordY, 'iron man lève le bras gauche')
     }
     if (coordX > 500 && coordX < 630 && coordY > 520 && coordY < 740) {
-        status += 'iron man lève le bras droit';                        
-        doCall = true;
+        doEmitSocket(MOVE_RIGHT_ARM, coordX, coordY, 'iron man lève le bras droit')
     }
     if (coordX > 270 && coordX < 520 && coordY > 280 && coordY < 350) {
-        status += 'iron man allume ses yeux';                        
-        doCall = true;
+        doEmitSocket(LIGHT_EYES, coordX, coordY, 'iron man allume ses yeux')
     }
     if (coordX > 350 && coordX < 430 && coordY > 540 && coordY < 600) {
-        status = 'status: iron man allume son torse';                        
-        doCall = true;
+        doEmitSocket(LIGHT_TORSO, coordX, coordY, 'iron man allume son torse')
     }
-    //while (moveEngine) {
-    let direction;
-    if (doCall) {
-        if (upWay) {
-            direction = "up";
-        } else if (event.touches[1]) {
-            diretcion = "down";
-        }
-        socket.emit('mvtstart', '{"mvt": true, "direction": "' + direction + '"}');
-        coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>' + status + '<br/>cpt: ' + cpt;
-    }//}
+}
 
-    //socket.emit('cpt', cpt);
+function doEmitSocket(move, coordX, coordY, status) {
+        socket.emit(move, '{"mvt": true}');
+        coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>status: ' + status + '<br/>cpt: ' + cpt;
 }

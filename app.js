@@ -1,20 +1,14 @@
-var http = require('http');
-var fs = require('fs');
-var express = require('express');
-var app = express();
-var server = http.createServer(app);
-var ip = require("ip");
-console.dir ( ip.address() );
-var path = require('path');
-var ios = require('socket.io-express-session');
+let http = require('http');
+let fs = require('fs');
+let express = require('express');
+let app = express();
+let server = http.createServer(app);
+let ip = require("ip");
+let path = require('path');
+let PythonShell = require('python-shell');
+let _ = require('lodash');
 
-/*var Session = require('express-session');
-var SessionStore = require('session-file-store')(Session);
-var session = Session({store: new SessionStore({path: __dirname+'/tmp/sessions'}), secret: 'pass', resave: true, saveUninitialized: true});
-
-
-app.use(session);
-*/
+console.log ( "le serveur est sur l'ip", ip.address() );
 
 app.use(express.static(__dirname + '/assets'));
 
@@ -23,81 +17,81 @@ app.get('/', function(req, res, next){
   res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-let cpt;
 // Chargement de socket.io
 var io = require('socket.io').listen(server);
-//io.use(ios(session));
-let move;
+
 // ajout des event quand la connexion a eu lieu
 io.sockets.on('connection', function (socket) {
     console.log('adresse client ' + socket.request.connection.remoteAddress);
-
-    //socket.emit('message', 'Vous êtes bien connecté !');
-
-	//socket.broadcast.emit('message', 'Un autre client vient de se connecter !');
-
-	// Quand le serveur reçoit un signal de type "message" du client    
-    socket.on('message', function (message) {
-        console.log(socket.pseudo + ' me parle ! Il me dit : ' + message);
-    });	
-	/*socket.on('petit_nouveau', function(pseudo) {
-        socket.pseudo = pseudo;
-	});*/
-	socket.on('mouvement', function(message) {
-        console.log(message);
-	});
-    socket.on('mvtstop', function(message) {
-        let data = JSON.parse(message);
-        move = data.mvt;
-        console.log("j'arrete de bouger " + move);
-        cpt = data.cpt;
-        if (data.direction == "up") {
-            upgrade(move);
-        } else {
-            downgrade(move);
-        }
+    socket.on('moveleftarm', function(message) {
+        launchPython('moveleftarm');
+    });
+    socket.on('moverighttarm', function(message) {
+        launchPython('moverightarm');
+    });
+    socket.on('movelefthand', function(message) {
+        launchPython('movelefthand');
+    });
+    socket.on('moverightthand', function(message) {
+        launchPython('moverighthand');
+    });
+    socket.on('movehead', function(message) {
+        launchPython('movehead');
+    });
+    socket.on('lighteyes', function(message) {
+        launchPython('lighteyes');
+    });
+    socket.on('lighttorso', function(message) {
+        launchPython('lighttorso');
     });
 
-    socket.on('mvtstart', function(message) {
-        let data = JSON.parse(message);
-        move = data.mvt;
-        //cpt = data.cpt;
-        if (data.direction == "up") {
-            upgrade(move);
-        } else {
-            downgrade(move);
-        }
-	});
 });
 
-let i = 1;
+// La liste des mouvements en cours
+let moves = [];
 
-function upgrade(move) {
-  console.log('move : ' + move);
-  let interval = setInterval( increment, 1000);
-}
-
-function downgrade(move) {
-  console.log('move : ' + move);
-//  let interval = setInterval( decrement, 1000);
-}
-
-function increment(){
-    console.log('je suis dans increment');
-    if (!move) {
+/**
+ * Lance le script Python pour réaliser un mouvement prédéfini.
+ * 
+ * @param {String} name le nom du mouvement à effectuer 
+ */
+function launchPython(name) {
+    if (!controlMove(name)) {
         return;
     }
-    i = i + 1;
-    console.log('cpt : ' + i);
+
+    var options = {
+        mode: 'text',
+        pythonPath: '/usr/bin/python',
+        pythonOptions: ['-u'],
+        scriptPath: 'python/',
+        args: ['value1', 'value2', 'value3']
+    };
+
+    console.log('début du mouvement', name);
+    PythonShell.run(name + '.py', options, function (err, results) {
+        if (err) throw err;
+        console.log('fin du mouvement', name);
+        console.log('%j', results);
+        _.pull(moves, name);
+    });
 }
 
-function decrement(){
-    console.log('je suis dans decrement');
-    if (!move) {
-        return;
+/**
+ * Contrôle le mouvement pour ne pas l'exécuter deux alors
+ * qu'un mouvement est en cours.
+ * On utilise un tableau car deux mouvements sur des membres
+ * différents est un cas d'usage normal.
+ * 
+ * @param {String} move le nom du mouvement 
+ */
+function controlMove(move) {
+    if (_.find(moves, function(o) { return o === move; })) {
+        return false;
+    } else {
+        moves = _.concat(moves, move);
+        return true;
     }
-    i = i - 1;
-    console.log('cpt : ' + i);
 }
 
 server.listen(8080, ip.address());
