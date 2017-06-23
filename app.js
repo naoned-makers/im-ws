@@ -23,25 +23,41 @@ var io = require('socket.io').listen(server);
 // ajout des event quand la connexion a eu lieu
 io.sockets.on('connection', function (socket) {
     console.log('adresse client ' + socket.request.connection.remoteAddress);
+
+    socket.on('leftarmstart', function(message) {
+        console.log(message);
+    });
+
+    socket.on('leftarmend', function(message) {
+        console.log(message);
+    });
+
     socket.on('moveleftarm', function(message) {
+        console.log(message);
         launchPython('moveleftarm');
     });
     socket.on('moverighttarm', function(message) {
+        console.log(message);
         launchPython('moverightarm');
     });
     socket.on('movelefthand', function(message) {
+        console.log(message);
         launchPython('movelefthand');
     });
     socket.on('moverightthand', function(message) {
+        console.log(message);
         launchPython('moverighthand');
     });
     socket.on('movehead', function(message) {
+        console.log(message);
         launchPython('movehead');
     });
     socket.on('lighteyes', function(message) {
+        console.log(message);
         launchPython('lighteyes');
     });
     socket.on('lighttorso', function(message) {
+        console.log(message);
         launchPython('lighttorso');
     });
 

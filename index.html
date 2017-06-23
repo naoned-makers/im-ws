@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Iron Man</title>
+        <title>Welcome to Maker Faire Nantes 2017</title>
         <link rel="stylesheet" type="text/css" href="styles/styles.css">
     </head>
  
@@ -14,82 +14,15 @@
             <br/>
             cpt: 
         </div>
-        <div id="touchzone"></div>
-        <!--<img id="scream" src="img/ironman-front.png" alt="Iron Man" width="800">-->
+        <object id="legosvg" type="image/svg+xml" data="../img/lego.svg"></object>
         
         
         <p><input type="button" value="Embêter le serveur" id="poke" /></p>
-        <p><input type="button" value="Lève le bras gauche" id="left_arm" /></p>
-        <p><input type="button" value="Lève le bras droit" id="right_arm" /></p>
         <div id="toto" img></canvas>
         <canvas id="remote" width="400" height="400" style="border:1px solid #000000;"></canvas>        
         <script src="scripts/jquery-1.10.1.min.js"></script> 
         <script src="/socket.io/socket.io.js"></script>
-         <script src="scripts/touch.js"></script>
-        
-        
-        <script>
-
-            /**
-                PARTIE WEBSOCKET
-            */
-            //console.log(location.host);
-            //console.log("sdcsdc ", ipadress, " sdckjshd");
-            var socket = io.connect('http://' + location.host);
-            socket.on('message', function(message) {
-                alert('Le serveur a un message pour vous : ' + message);
-            });
-            /*document.getElementById('test').click(function () {
-            console.log('sldjvsdlhvlhsdlv')
-
-            })
-            document.getElementById('poke').click(function () {
-              console.log("coucou le monde")
-                socket.emit('message', 'XXSalut serveur, ça va ?');
-            });*/
-
-            var canvas = document.getElementById("remote");
-            canvas.addEventListener("touchstart", mouse_down);
-            canvas.addEventListener("touchend", mouse_up);
-            canvas.addEventListener("touchmove", mouse_move);
-            canvas.addEventListener("mousedown", mouse_down);
-            canvas.addEventListener("mouseup", mouse_up);
-            canvas.addEventListener("mousemove", mouse_move);
- 
- 
-
-
-            $('#poke').click(function () {
-                socket.emit('message', 'Salut serveur, ça va ?');
-            });
-            $('#left_arm').click(function () {
-                socket.emit('mouvement', 'Je lève le bras gauche...');
-            });
-            $('#right_arm').click(function () {
-                socket.emit('mouvement', 'Je lève le bras droit...');
-            });
-
-            /*var pseudo = prompt('Quel est votre pseudo ?');
-            socket.emit('petit_nouveau', pseudo);*/
-        function mouse_down()
-        {
-            cpt = cpt - 1;
-            console.log('mouse_down');
-            socket.emit('cpt', cpt);
-        }
-        function mouse_up()
-        {
-            cpt = cpt + 1;
-            console.log('mouse_up');
-            socket.emit('cpt', cpt);
-        }
-        function mouse_move()
-        {
-            console.log('mouse_move');
-            socket.emit('cpt', cpt);
-        }
-
-
-       </script>
+        <script src="scripts/touch.js"></script>
+        <script src="scripts/ws.js"></script>
     </body>
 </html>
