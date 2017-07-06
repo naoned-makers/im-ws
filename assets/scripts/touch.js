@@ -4,7 +4,7 @@ let upWay = true;
 let MOVE_LEFT_ARM = "moveleftarm";
 let MOVE_RIGHT_ARM = "moverighttarm";
 let MOVE_LEFT_HAND = "movelefthand";
-let MOVE_RIGHT_HAND = "moverightthand";
+let MOVE_RIGHT_HAND = "moverighthand";
 let MOVE_HEAD = "movehead";
 let LIGHT_EYES = "lighteyes";
 let LIGHT_TORSO = "lighttorso";
@@ -86,7 +86,7 @@ function rightHandStartHandler(event) {
 }
 function rightHandEndHandler(event) {
     console.log('je suis dans rightHandEndHandler');
-    socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
+    socket.emit('rightarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
 }
 function headStartHandler(event) {
     console.log('je suis dans headStartHandler');
