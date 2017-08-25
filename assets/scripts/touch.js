@@ -4,7 +4,7 @@ let upWay = true;
 let MOVE_LEFT_ARM = "moveleftarm";
 let MOVE_RIGHT_ARM = "moverighttarm";
 let MOVE_LEFT_HAND = "movelefthand";
-let MOVE_RIGHT_HAND = "moverightthand";
+let MOVE_RIGHT_HAND = "moverighthand";
 let MOVE_HEAD = "movehead";
 let LIGHT_EYES = "lighteyes";
 let LIGHT_TORSO = "lighttorso";
@@ -95,8 +95,16 @@ function rightHandStartHandler(event) {
 }
 /*function rightHandEndHandler(event) {
     console.log('je suis dans rightHandEndHandler');
+<<<<<<< HEAD
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
 }*/
+||||||| merged common ancestors
+    socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
+}
+=======
+    socket.emit('rightarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
+}
+>>>>>>> 9e5c7c0485ba88f4984de0c40b4f7855449e1584
 function headStartHandler(event) {
     console.log('je suis dans headStartHandler');
     doEmitSocket(MOVE_HEAD, 'iron man tourne la tête');

@@ -44,7 +44,7 @@ io.sockets.on('connection', function (socket) {
         console.log(message);
         launchPython('movelefthand');
     });
-    socket.on('moverightthand', function(message) {
+    socket.on('moverighthand', function(message) {
         console.log(message);
         launchPython('moverighthand');
     });
