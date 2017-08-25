@@ -95,16 +95,8 @@ function rightHandStartHandler(event) {
 }
 /*function rightHandEndHandler(event) {
     console.log('je suis dans rightHandEndHandler');
-<<<<<<< HEAD
-    socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
-}*/
-||||||| merged common ancestors
-    socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
-}
-=======
     socket.emit('rightarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
-}
->>>>>>> 9e5c7c0485ba88f4984de0c40b4f7855449e1584
+}*/
 function headStartHandler(event) {
     console.log('je suis dans headStartHandler');
     doEmitSocket(MOVE_HEAD, 'iron man tourne la tête');
