@@ -24,13 +24,13 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
     console.log('adresse client ' + socket.request.connection.remoteAddress);
 
-    socket.on('leftarmstart', function(message) {
+    /*socket.on('leftarmstart', function(message) {
         console.log(message);
     });
 
     socket.on('leftarmend', function(message) {
         console.log(message);
-    });
+    });*/
 
     socket.on('moveleftarm', function(message) {
         console.log(message);
@@ -58,7 +58,7 @@ io.sockets.on('connection', function (socket) {
     });
     socket.on('lighttorso', function(message) {
         console.log(message);
-        launchPython('lighttorso');
+        launchPython('energy');
     });
 
 });

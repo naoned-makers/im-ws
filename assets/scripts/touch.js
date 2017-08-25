@@ -27,76 +27,92 @@ legosvg.addEventListener("load",function(){
     var left_hand = svgDoc.getElementById("left_hand");
     var right_hand = svgDoc.getElementById("right_hand");
     var head = svgDoc.getElementById("head");
+    var energy = svgDoc.getElementById("energy");
 
     // Ajout du comportement
     left_arm.addEventListener("touchstart", touchHandler, false);
     left_arm.addEventListener("touchend", touchHandler, false);
-    left_arm.addEventListener("mouseup", leftArmEndHandler, false);
+    //left_arm.addEventListener("mouseup", leftArmEndHandler, false);
     left_arm.addEventListener("mousedown", leftArmStartHandler, false);
 
     right_arm.addEventListener("touchstart", touchHandler, false);
     right_arm.addEventListener("touchend", touchHandler, false);
-    right_arm.addEventListener("mouseup", rightArmEndHandler, false);
+    //right_arm.addEventListener("mouseup", rightArmEndHandler, false);
     right_arm.addEventListener("mousedown", rightArmStartHandler, false);
 
     left_hand.addEventListener("touchstart", touchHandler, false);
     left_hand.addEventListener("touchend", touchHandler, false);
-    left_hand.addEventListener("mouseup", leftHandEndHandler, false);
+    //left_hand.addEventListener("mouseup", leftHandEndHandler, false);
     left_hand.addEventListener("mousedown", leftHandStartHandler, false);
 
     right_hand.addEventListener("touchstart", touchHandler, false);
     right_hand.addEventListener("touchend", touchHandler, false);
-    right_hand.addEventListener("mouseup", rightHandEndHandler, false);
+    //right_hand.addEventListener("mouseup", rightHandEndHandler, false);
     right_hand.addEventListener("mousedown", rightHandStartHandler, false);
 
     head.addEventListener("touchstart", touchHandler, false);
     head.addEventListener("touchend", touchHandler, false);
-    head.addEventListener("mouseup", headEndHandler, false);
+    //head.addEventListener("mouseup", headEndHandler, false);
     head.addEventListener("mousedown", headStartHandler, false);
+
+    energy.addEventListener("touchstart", touchHandler, false);
+    energy.addEventListener("touchend", touchHandler, false);
+    //energy.addEventListener("mouseup", energyEndHandler, false);
+    energy.addEventListener("mousedown", energyStartHandler, false);
 }, false);
 
 
 function leftArmStartHandler(event) {
     console.log('je suis dans leftArmStartHandler');
+    // Modifier la couleur du bras
+    document.getElementById("legosvg").contentDocument.getElementById("left_arm").style['background-color'] = 'red'; // Don't work
+    document.getElementById("test").style['background-color'] = 'red'; // work
     doEmitSocket(MOVE_LEFT_ARM, 'iron man lève le bras gauche');
 }
-function leftArmEndHandler(event) {
+/*function leftArmEndHandler(event) {
     console.log('je suis dans leftArmEndHandler');
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU leftArmEndHandler');
-}
+}*/
 function rightArmStartHandler(event) {
     console.log('je suis dans rightArmStartHandler');
     doEmitSocket(MOVE_RIGHT_ARM, 'iron man lève le bras droit');
 }
-function rightArmEndHandler(event) {
+/*function rightArmEndHandler(event) {
     console.log('je suis dans rightArmEndHandler');
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightArmEndHandler');
-}
+}*/
 function leftHandStartHandler(event) {
     console.log('je suis dans leftHandStartHandler');
     doEmitSocket(MOVE_LEFT_HAND, 'iron man tourne la main gauche');
 }
-function leftHandEndHandler(event) {
+/*function leftHandEndHandler(event) {
     console.log('je suis dans leftHandEndHandler');
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU leftHandEndHandler');
-}
+}*/
 function rightHandStartHandler(event) {
     console.log('je suis dans rightHandStartHandler');
     doEmitSocket(MOVE_RIGHT_HAND, 'iron man tourne la main droite');
 }
-function rightHandEndHandler(event) {
+/*function rightHandEndHandler(event) {
     console.log('je suis dans rightHandEndHandler');
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU rightHandEndHandler');
-}
+}*/
 function headStartHandler(event) {
     console.log('je suis dans headStartHandler');
     doEmitSocket(MOVE_HEAD, 'iron man tourne la tête');
 }
-function headEndHandler(event) {
+/*function headEndHandler(event) {
     console.log('je suis dans headEndHandler');
     socket.emit('leftarmend', 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU headEndHandler');
+}*/
+function energyStartHandler(event) {
+    console.log('je suis dans energyStartHandler');
+    socket.emit(LIGHT_TORSO, 'iron man allume les LED de son torse');
 }
-
+/*function energyEndHandler(event) {
+    console.log('je suis dans energyEndHandler');
+    socket.emit(LIGHT_TORSO, 'YYYYYOOOOOOOOOOOUUUHHHHHHHHHHHHHOOOOOOOOOUUUUU headEndHandler');
+}*/
 function doEmitSocket(move, status) {
         socket.emit(move, status);
         //coords.innerHTML = 'x: ' + coordX + ', y: ' + coordY + '<br/>status: ' + status + '<br/>cpt: ' + cpt;

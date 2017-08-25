@@ -13,3 +13,6 @@ body {
 #coords {
     color: white;
 }
+.head {
+	opacity: 0.4;
+}

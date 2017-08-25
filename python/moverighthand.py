@@ -20,16 +20,16 @@ SERVO_MAX_RIGHT_HAND = 450  # Max pulse length out of 4096 POSITION HAUTE
 
 def upAndDownRightHand(sleep = 1):
   #TODO REMOVE pwm.setPWM(CHANNEL_RIGHT_HAND, 0, SERVO_MIDDLE_RIGHT_HAND)
-  print "Main gauche à moitié tournée"
+  print "Main droite à moitié tournée"
   time.sleep(sleep)
   #TODO REMOVE pwm.setPWM(CHANNEL_RIGHT_HAND, 0, SERVO_MAX_RIGHT_HAND)
-  print "Main gauche à complétement tournée"
+  print "Main droite à complétement tournée"
   time.sleep(sleep)
   #TODO REMOVE pwm.setPWM(CHANNEL_RIGHT_HAND, 0, SERVO_MIDDLE_RIGHT_HAND)
-  print "Main gauche à moitié tournée"
+  print "Main droite à moitié tournée"
   time.sleep(sleep)
   #TODO REMOVE pwm.setPWM(CHANNEL_RIGHT_HAND, 0, SERVO_MIN_RIGHT_HAND)
-  print "Main gauche à complétement tourné"
+  print "Main droite à complétement tourné"
   time.sleep(sleep)
 
 upAndDownRightHand()
