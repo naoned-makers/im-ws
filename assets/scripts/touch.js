@@ -2,7 +2,7 @@ let cpt = 0;
 let upWay = true;
 
 let MOVE_LEFT_ARM = "moveleftarm";
-let MOVE_RIGHT_ARM = "moverighttarm";
+let MOVE_RIGHT_ARM = "moverightarm";
 let MOVE_LEFT_HAND = "movelefthand";
 let MOVE_RIGHT_HAND = "moverighthand";
 let MOVE_HEAD = "movehead";
@@ -71,9 +71,5 @@ function headStartHandler(event) {
 
 function energyStartHandler(event) {
     console.log('je suis dans energyStartHandler');
-    socket.emit(LIGHT_TORSO, 'iron man allume les LED de son torse');
-}
-
-function doEmitSocket(move, status) {
-        socket.emit(move, status);
+    doEmitSocket(LIGHT_TORSO, 'iron man allume les LED de son torse');
 }
