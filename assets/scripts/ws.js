@@ -1,7 +1,7 @@
 /**
     PARTIE MQTT sur WEBSOCKET
 */
-var client = mqtt.connect('ws://localhost:3000',{clientId:'im-simulator'});//"ws" 'ws://localhost:3000',{clientId:'im-ihm-client'}
+var client = mqtt.connect('ws://localhost:3000',{clientId:'im-web'});//"ws" 'ws://localhost:3000',{clientId:'im-ihm-client'}
 
 //Emitted on successful (re)connection 
 client.on('connect', function () { 
