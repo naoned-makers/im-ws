@@ -1,19 +1,7 @@
-
-/**
-    PARTIE WEBSOCKET
-
-var socket = io.connect('http://' + location.host);
-
-function doEmitSocket(move, status) {
-    socket.emit(move, status);
-}
-*/
-
-
 /**
     PARTIE MQTT sur WEBSOCKET
 */
-var client = mqtt.connect('ws://localhost:3000',{clientId:'im-web'});//"ws" 'ws://localhost:3000',{clientId:'im-ihm-client'}
+var client = mqtt.connect('ws://localhost:3000',{clientId:'im-simulator'});//"ws" 'ws://localhost:3000',{clientId:'im-ihm-client'}
 
 //Emitted on successful (re)connection 
 client.on('connect', function () { 
@@ -42,9 +30,9 @@ client.on('connect', function () {
     document.getElementById("legosvg").getSVGDocument().getElementById("energy").querySelector("circle").setAttribute("fill", "gray"); 
  })
 
-function doEmitSocket(move, status) {
-    let playload = {'move':move,'status':status}
-    client.publish("topicLegacyMessage",JSON.stringify(playload),console.info);
+function doEmitSocket(entityMove, status) {
+    let playload = {'status':status,'origin':'im-web'}
+    client.publish("im/command/"+entityMove,JSON.stringify(playload),console.info);
 }
 
 

@@ -8,96 +8,59 @@ let path = require('path');
 let PythonShell = require('python-shell');
 let _ = require('lodash');
 
-console.log("le serveur est sur l'ip", ip.address());
+//Domains Entity
+let entities = require('./entities.js'); 
 
+//#########################
+//for serving html files
+//#########################
 app.use(express.static(__dirname + '/assets'));
-
 app.get('/', function (req, res, next) {
-    console.log('arrivé sur la page...');
+    //console.log('arrivé sur la page...');
     res.sendFile(path.join(__dirname + '/index.html'));
 });
+server.listen(8080);
+console.log('\x1b[35m%s\x1b[0m',"web server is up on "+ip.address()+":8080");
 
 
+
+//#########################
+//for POC we start everithing from one script
+//  Broker MQTT (aka mosca nodejs module)
+//  synapse script in python
+//  im-brain (CQRS way)
+//#########################
 let mosca = require('mosca');
 let mqtt = require('mqtt');
-//pour le poc tous en un on démarre donc le brocker mqtt ici
-startMqttBroker().then(function () {
+startLocalMqttBroker().then(function () {
+    console.log('\x1b[35m%s\x1b[0m',"mqtt brocker is up");
 
-    //une fois démaré, on se connecte au broker (localhost) et on suscribe aux message
-        var client = mqtt.connect('mqtt://localhost',{clientId:'im-ws'})
-        client.on('connect', function () {
-            client.subscribe('topicLegacyMessage')
-        })
-        //quelque chose de nouveau sur le seul topic souscrit aka 'topicLegacyMessage'
-        client.on('message', function (topic, strPlayload) {
-            let playLoad = JSON.parse(strPlayload);
-            console.log('#/topicLegacyMessage ',playLoad);
-            if(playLoad.move=='lighttorso'){
-                launchPython('energy');
-            }else{
-                launchPython(playLoad.move);
-            }
-            //client.end()
-        })
-    }
-);
+    //#########################
+    //start local actioner listener
+    //#########################
+    launchPython("synapse",'mock');
 
-// La liste des mouvements en cours
-let moves = [];
 
-/**
- * Lance le script Python pour réaliser un mouvement prédéfini.
- * 
- * @param {String} name le nom du mouvement à effectuer 
- */
-function launchPython(name) {
-    if (!controlMove(name)) {
-        return;
-    }
+    //#########################
+    //start local im-brain
+    //#########################
+    startLocalBrain();
 
-    var options = {
-        mode: 'text',
-        pythonPath: '/usr/bin/python',
-        pythonOptions: ['-u'],
-        scriptPath: 'python/',
-        args: ['value1', 'value2', 'value3']
-    };
 
-    console.log('début du mouvement', name);
-    PythonShell.run(name + '.py', options, function (err, results) {
-        if (err) throw err;
-        console.log('fin du mouvement', name);
-        console.log('%j', results);
-        _.pull(moves, name);
-    });
-}
+    //#########################
+    //start local to internet message gateway
+    //#########################
+    startInternetMessageRelay();
+    
 
-/**
- * Contrôle le mouvement pour ne pas l'exécuter deux alors
- * qu'un mouvement est en cours.
- * On utilise un tableau car deux mouvements sur des membres
- * différents est un cas d'usage normal.
- * 
- * @param {String} move le nom du mouvement 
- */
-function controlMove(move) {
-    if (_.find(moves, function (o) { return o === move; })) {
-        return false;
-    } else {
-        moves = _.concat(moves, move);
-        return true;
-    }
-}
-
-server.listen(8080, ip.address());
-
+});
 
 /**
  * Démare un broker mqtt sur le port standard 1883
  * Le broker gère aussi le mqtt sur websocket sur le port 3000
  * Le tous sans authentification, ni quelconque sécurité
  */
-function startMqttBroker() {
+function startLocalMqttBroker() {
     return new Promise((resolve, reject) => {
 
         var moscaSettings = {
@@ -115,7 +78,7 @@ function startMqttBroker() {
             //  certPath: SECURE_CERT,
             //}
             http: {
-                port: 3000,
+                port: 3000,         //activated mqtt on ws
                 //bundle: true,     mqtt.js n'est pas servi par ce bias
                 //static: './'
             }
@@ -130,11 +93,84 @@ function startMqttBroker() {
         server.on('clientDisconnected', function (client) {
             console.log('clientDisconnected', client.id);
         });
-        
+
         // fired when a message is received
         server.on('published', function (packet, client) {
             //console.log('Published', packet.topic + " " +packet.payload);
         });
+    });
+
+}
+
+
+/**
+ * Start a command handler who listen to mqtt commande message topics
+ * Logic based on CQRS E/S architecture
+ * TODO refactor in reactiveJS way
+ */
+function startLocalBrain() {
+
+    //une fois démaré, on se connecte au broker (localhost) et on suscribe aux command message
+    var client = mqtt.connect('mqtt://localhost', { clientId: 'im-brain' })
+    client.on('connect', function () {
+        //commnad topics look like  im/command/<entity>/<command>
+        client.subscribe('im/command/#')
+    })
+    //A new command as arrived
+    client.on('message', function (topic, strPlayload) {
+        //TODO add a try catch
+        var entityCode = topic.split("/")[2];
+        var entityCommand = topic.split("/")[3];
+        console.log('\x1b[36m%s\x1b[0m',entityCode +"/"+ entityCommand +"->"+ strPlayload);
+        var playLoad = JSON.parse(strPlayload);
+        //call the matching entity domain
+        if(entities[entityCode + 'Entity']){
+            entities[entityCode + 'Entity'](client,entityCommand, playLoad);
+        }else{
+            console.log('\x1b[36m%s\x1b[0m',"Entity domain not found");    
+        }
+        
+    })
+}
+
+
+/**
+ * Start a internet gateway that synchronize one way between an internet firebase realtime database and local mqtt broker
+ *      firebase path  <-->   mqtt topic url
+ */
+function startInternetMessageRelay(){
+    //Connect to firebase realtimedatabase
+    //  'im/event/#'
+    //suscribe to mqtt event topics and update corresponding firebase event entry
+    //  'im/command/#'
+    //watch firebase command entry, and publish them as a mqtt one in the corresponding item
+}
+
+/**
+ * Lance le script Python 
+ * 
+ * @param {String} name le nom du mouvement à effectuer 
+ * @param {String} firstArg python script first arg
+ */
+function launchPython(name,firstArg="") {
+    var options = {
+        mode: 'text',
+        pythonPath: '/usr/bin/python',
+        pythonOptions: ['-u'],
+        scriptPath: 'python/',
+        args: [firstArg]
+    };
+
+    //console.log('launchPython', name);
+    let pyshell = PythonShell.run(name + '.py', options, function (err, results) {
+        if (err) throw err;
+        console.log('end launchPython', name);
+        //console.log('%j', results); we prefer live message that a final result
+    });
+
+    pyshell.on('message', function (message) {
+        // received a message sent from the Python script (a simple "print" statement) 
+        console.log('\x1b[33m%s\x1b[0m',message);
     });
 
 }
