@@ -1,3 +1,8 @@
+import './styles/styles.css';
+import io from 'socket.io-client';
+
+const socket = io.connect('http://' + location.host);
+
 let cpt = 0;
 let upWay = true;
 
