@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 let http = require('http');
 let fs = require('fs');
 let express = require('express');
@@ -68,7 +72,7 @@ function launchPython(name) {
 
   var options = {
     mode: 'text',
-    pythonPath: '/usr/bin/python',
+    pythonPath: process.env.PYTHON_PATH,
     pythonOptions: ['-u'],
     scriptPath: 'python/',
     args: ['value1', 'value2', 'value3']

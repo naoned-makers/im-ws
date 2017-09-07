@@ -1,3 +1,8 @@
+# Environment variables
+
+A `.env` file must exist in the root directory of the project to define the following environment-specific variables :
+- `PYTHON_PATH` : absolute path to python executable
+
 # Pour débugger l'application
 
 ''
