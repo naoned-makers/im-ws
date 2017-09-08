@@ -19,7 +19,7 @@ export default {
     filename: '[name].js'
   },
   resolve: {
-    extensions: ['.js', '.css', '*']
+    extensions: ['.js', '.jsx', '.css', '*']
   },
   devtool: 'cheap-module-eval-source-map',
   devServer: {
@@ -37,6 +37,9 @@ export default {
   },
   module: {
     rules: [{
+      test: /\.(js|jsx)$/,
+      use: ['babel-loader']
+    }, {
       test: /\.css$/,
       use: ['style-loader', 'css-loader']
     }]
