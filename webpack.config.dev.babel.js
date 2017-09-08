@@ -1,6 +1,5 @@
 import webpack from 'webpack';
 import path from 'path';
-import fs from 'fs';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
