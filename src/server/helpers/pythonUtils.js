@@ -38,7 +38,7 @@ const launchPython = (name) => {
  * 
  * @param {String} move the name of the movement to control
  */
-const moveIsInProgress = (move) => {
+export const moveIsInProgress = (move) => {
   if (moves.find((m) => m === move)) {
     return true;
   } else {
