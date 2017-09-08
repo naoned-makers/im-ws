@@ -4,6 +4,7 @@ import express from 'express';
 import path from 'path';
 import socket from 'socket.io';
 import * as pythonUtils from './helpers/pythonUtils';
+import * as movement from '../common/movementNames';
 
 dotenv.config();
 
@@ -22,13 +23,13 @@ app.get('/', (req, res, next) => {
 io.sockets.on('connection', (socket) => {
   console.log(`Client address : ${socket.request.connection.remoteAddress}`);
 
-  socket.on('moveleftarm', (message) => pythonUtils.moveLeftArm(message));
-  socket.on('moverighttarm', (message) => pythonUtils.moveRightArm(message));
-  socket.on('movelefthand', (message) => pythonUtils.moveLeftHand(message));
-  socket.on('moverighthand', (message) => pythonUtils.moveRightHand(message));
-  socket.on('movehead', (message) => pythonUtils.moveHead(message));
-  socket.on('lighteyes', (message) => pythonUtils.lightEyes(message));
-  socket.on('lighttorso', (message) => pythonUtils.lightTorso(message));
+  socket.on(movement.MOVE_LEFT_ARM, (message) => pythonUtils.moveLeftArm(message));
+  socket.on(movement.MOVE_RIGHT_ARM, (message) => pythonUtils.moveRightArm(message));
+  socket.on(movement.MOVE_LEFT_HAND, (message) => pythonUtils.moveLeftHand(message));
+  socket.on(movement.MOVE_RIGHT_HAND, (message) => pythonUtils.moveRightHand(message));
+  socket.on(movement.MOVE_HEAD, (message) => pythonUtils.moveHead(message));
+  socket.on(movement.LIGHT_EYES, (message) => pythonUtils.lightEyes(message));
+  socket.on(movement.LIGHT_TORSO, (message) => pythonUtils.lightTorso(message));
 });
 
 server.listen(5000, () => {

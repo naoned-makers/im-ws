@@ -1,19 +1,11 @@
 import './styles/styles.css';
 import io from 'socket.io-client';
+import * as movement from '../common/movementNames';
 
 const socket = io.connect('http://' + location.host);
 
 let cpt = 0;
 let upWay = true;
-
-let MOVE_LEFT_ARM = "moveleftarm";
-let MOVE_RIGHT_ARM = "moverighttarm";
-let MOVE_LEFT_HAND = "movelefthand";
-let MOVE_RIGHT_HAND = "moverighthand";
-let MOVE_HEAD = "movehead";
-let LIGHT_EYES = "lighteyes";
-let LIGHT_TORSO = "lighttorso";
-
 let move;
 
 /**
@@ -22,7 +14,7 @@ let move;
 // Get a reference to our touch-sensitive element
 var legosvg = document.getElementById("legosvg");
 
-legosvg.addEventListener("load",function(){
+legosvg.addEventListener("load", function () {
 
     // Récupération des éléments du SVG
     var svgDoc = legosvg.contentDocument;
@@ -51,34 +43,34 @@ legosvg.addEventListener("load",function(){
 
 function leftArmStartHandler(event) {
     console.log('je suis dans leftArmStartHandler');
-    doEmitSocket(MOVE_LEFT_ARM, 'iron man lève le bras gauche');
+    doEmitSocket(movement.MOVE_LEFT_ARM, 'iron man lève le bras gauche');
 }
 
 function rightArmStartHandler(event) {
     console.log('je suis dans rightArmStartHandler');
-    doEmitSocket(MOVE_RIGHT_ARM, 'iron man lève le bras droit');
+    doEmitSocket(movement.MOVE_RIGHT_ARM, 'iron man lève le bras droit');
 }
 
 function leftHandStartHandler(event) {
     console.log('je suis dans leftHandStartHandler');
-    doEmitSocket(MOVE_LEFT_HAND, 'iron man tourne la main gauche');
+    doEmitSocket(movement.MOVE_LEFT_HAND, 'iron man tourne la main gauche');
 }
 
 function rightHandStartHandler(event) {
     console.log('je suis dans rightHandStartHandler');
-    doEmitSocket(MOVE_RIGHT_HAND, 'iron man tourne la main droite');
+    doEmitSocket(movement.MOVE_RIGHT_HAND, 'iron man tourne la main droite');
 }
 
 function headStartHandler(event) {
     console.log('je suis dans headStartHandler');
-    doEmitSocket(MOVE_HEAD, 'iron man tourne la tête');
+    doEmitSocket(movement.MOVE_HEAD, 'iron man tourne la tête');
 }
 
 function energyStartHandler(event) {
     console.log('je suis dans energyStartHandler');
-    socket.emit(LIGHT_TORSO, 'iron man allume les LED de son torse');
+    socket.emit(movement.LIGHT_TORSO, 'iron man allume les LED de son torse');
 }
 
 function doEmitSocket(move, status) {
-        socket.emit(move, status);
+    socket.emit(move, status);
 }
