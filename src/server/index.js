@@ -2,9 +2,8 @@ import dotenv from 'dotenv';
 import http from 'http';
 import express from 'express';
 import path from 'path';
-import PythonShell from 'python-shell';
-import * as _ from 'lodash';
 import socket from 'socket.io';
+import * as pythonUtils from './helpers/pythonUtils';
 
 dotenv.config();
 
@@ -23,83 +22,14 @@ app.get('/', (req, res, next) => {
 io.sockets.on('connection', (socket) => {
   console.log(`Client address : ${socket.request.connection.remoteAddress}`);
 
-  socket.on('moveleftarm', (message) => {
-    console.log(message);
-    launchPython('moveleftarm');
-  });
-  socket.on('moverighttarm', (message) => {
-    console.log(message);
-    launchPython('moverightarm');
-  });
-  socket.on('movelefthand', (message) => {
-    console.log(message);
-    launchPython('movelefthand');
-  });
-  socket.on('moverighthand', (message) => {
-    console.log(message);
-    launchPython('moverighthand');
-  });
-  socket.on('movehead', (message) => {
-    console.log(message);
-    launchPython('movehead');
-  });
-  socket.on('lighteyes', (message) => {
-    console.log(message);
-    launchPython('lighteyes');
-  });
-  socket.on('lighttorso', (message) => {
-    console.log(message);
-    launchPython('energy');
-  });
-
+  socket.on('moveleftarm', (message) => pythonUtils.moveLeftArm(message));
+  socket.on('moverighttarm', (message) => pythonUtils.moveRightArm(message));
+  socket.on('movelefthand', (message) => pythonUtils.moveLeftHand(message));
+  socket.on('moverighthand', (message) => pythonUtils.moveRightHand(message));
+  socket.on('movehead', (message) => pythonUtils.moveHead(message));
+  socket.on('lighteyes', (message) => pythonUtils.lightEyes(message));
+  socket.on('lighttorso', (message) => pythonUtils.lightTorso(message));
 });
-
-// List of current movements
-let moves = [];
-
-/**
- * Executes Python script to achieve a preset movement
- * 
- * @param {String} name the name of the movement to achieve
- */
-const launchPython = (name) => {
-  if (!controlMove(name)) {
-    return;
-  }
-
-  const options = {
-    mode: 'text',
-    pythonPath: process.env.PYTHON_PATH,
-    pythonOptions: ['-u'],
-    scriptPath: 'python/',
-    args: ['value1', 'value2', 'value3']
-  };
-
-  console.log(`Movement ${name} start`);
-  PythonShell.run(name + '.py', options, (err, results) => {
-    if (err) throw err;
-    console.log(`Movement ${name} end`);
-    console.log('%j', results);
-    _.pull(moves, name);
-  });
-}
-
-/**
- * Checks if the movement is not already in progress.
- * 
- * A movement on the same member / body part cannot be achieved more than once simultaneously.
- * However, several movements on different body parts can be achieved simultaneously.
- * 
- * @param {String} move the name of the movement to control
- */
-const controlMove = (move) => {
-  if (_.find(moves, (o) => o === move)) {
-    return false;
-  } else {
-    moves = _.concat(moves, move);
-    return true;
-  }
-}
 
 server.listen(5000, () => {
   console.log(`Server listening on *:5000`);
