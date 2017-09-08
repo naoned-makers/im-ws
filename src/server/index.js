@@ -1,76 +1,73 @@
 import dotenv from 'dotenv';
+import http from 'http';
+import express from 'express';
+import path from 'path';
+import PythonShell from 'python-shell';
+import * as _ from 'lodash';
+import socket from 'socket.io';
 
 dotenv.config();
 
-let http = require('http');
-let fs = require('fs');
-let express = require('express');
-let app = express();
-let server = http.createServer(app);
-let path = require('path');
-let PythonShell = require('python-shell');
-let _ = require('lodash');
+const app = express();
+const server = http.createServer(app);
+const io = socket.listen(server);
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function (req, res, next) {
-  console.log('arrivé sur la page...');
-
+app.get('/', (req, res, next) => {
+  console.log('A client is coming...');
   res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
-// Chargement de socket.io
-var io = require('socket.io').listen(server);
+// Events set up after the connection
+io.sockets.on('connection', (socket) => {
+  console.log(`Client address : ${socket.request.connection.remoteAddress}`);
 
-// ajout des event quand la connexion a eu lieu
-io.sockets.on('connection', function (socket) {
-  console.log('adresse client ' + socket.request.connection.remoteAddress);
-
-  socket.on('moveleftarm', function (message) {
+  socket.on('moveleftarm', (message) => {
     console.log(message);
     launchPython('moveleftarm');
   });
-  socket.on('moverighttarm', function (message) {
+  socket.on('moverighttarm', (message) => {
     console.log(message);
     launchPython('moverightarm');
   });
-  socket.on('movelefthand', function (message) {
+  socket.on('movelefthand', (message) => {
     console.log(message);
     launchPython('movelefthand');
   });
-  socket.on('moverighthand', function (message) {
+  socket.on('moverighthand', (message) => {
     console.log(message);
     launchPython('moverighthand');
   });
-  socket.on('movehead', function (message) {
+  socket.on('movehead', (message) => {
     console.log(message);
     launchPython('movehead');
   });
-  socket.on('lighteyes', function (message) {
+  socket.on('lighteyes', (message) => {
     console.log(message);
     launchPython('lighteyes');
   });
-  socket.on('lighttorso', function (message) {
+  socket.on('lighttorso', (message) => {
     console.log(message);
     launchPython('energy');
   });
 
 });
 
-// La liste des mouvements en cours
+// List of current movements
 let moves = [];
 
 /**
- * Lance le script Python pour réaliser un mouvement prédéfini.
+ * Executes Python script to achieve a preset movement
  * 
- * @param {String} name le nom du mouvement à effectuer 
+ * @param {String} name the name of the movement to achieve
  */
-function launchPython(name) {
+const launchPython = (name) => {
   if (!controlMove(name)) {
     return;
   }
 
-  var options = {
+  const options = {
     mode: 'text',
     pythonPath: process.env.PYTHON_PATH,
     pythonOptions: ['-u'],
@@ -78,25 +75,25 @@ function launchPython(name) {
     args: ['value1', 'value2', 'value3']
   };
 
-  console.log('début du mouvement', name);
-  PythonShell.run(name + '.py', options, function (err, results) {
+  console.log(`Movement ${name} start`);
+  PythonShell.run(name + '.py', options, (err, results) => {
     if (err) throw err;
-    console.log('fin du mouvement', name);
+    console.log(`Movement ${name} end`);
     console.log('%j', results);
     _.pull(moves, name);
   });
 }
 
 /**
- * Contrôle le mouvement pour ne pas l'exécuter deux alors
- * qu'un mouvement est en cours.
- * On utilise un tableau car deux mouvements sur des membres
- * différents est un cas d'usage normal.
+ * Checks if the movement is not already in progress.
  * 
- * @param {String} move le nom du mouvement 
+ * A movement on the same member / body part cannot be achieved more than once simultaneously.
+ * However, several movements on different body parts can be achieved simultaneously.
+ * 
+ * @param {String} move the name of the movement to control
  */
-function controlMove(move) {
-  if (_.find(moves, function (o) { return o === move; })) {
+const controlMove = (move) => {
+  if (_.find(moves, (o) => o === move)) {
     return false;
   } else {
     moves = _.concat(moves, move);
