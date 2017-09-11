@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Body from './components/body'
+import { Body } from './components'
 import './styles/styles.css';
 
 ReactDOM.render(

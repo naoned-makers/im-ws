@@ -1,8 +1,0 @@
-#head:active #glow {
-  fill: '#DAF0F6';
-  filter: url(#blur-filter);
-}
-
-#head:active #border {
-  fill: '#6ECCDD';
-}
