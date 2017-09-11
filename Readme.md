@@ -43,5 +43,5 @@ Pour tester la construction (ou démarrer l'application), exécuter la commande 
 # Dans le cas où nodemon est installé en global :
 nodemon ./dist/server
 # Dans le cas contraire :
-node_modules\.bin\nodemon dist\server.js
+./node_modules/.bin/nodemon dist/server.js
 ```

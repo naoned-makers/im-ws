@@ -4,7 +4,6 @@ import fs from 'fs';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import BabelMinifyPlugin from 'babel-minify-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
@@ -70,6 +69,9 @@ const client = {
     path: path.resolve(PATHS.dist, 'public'),
     filename: '[name].[chunkhash].js'
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.css', '*']
+  },
   devtool: 'sourcemap',
   performance: {
     hints: 'warning',
@@ -105,10 +107,6 @@ const client = {
       }
     }),
     new ExtractTextPlugin('[name].[contenthash].css'),
-    new CopyWebpackPlugin([{
-      from: path.resolve(PATHS.client, 'img'),
-      to: 'img'
-    }]),
     new BabelMinifyPlugin(),
     new OptimizeCSSAssetsPlugin({
       cssProcessor: cssnano,
@@ -122,7 +120,7 @@ const client = {
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks: ({resource}) => resource && resource.indexOf('node_modules') >= 0 && resource.match(/\.js$/)
+      minChunks: ({ resource }) => resource && resource.indexOf('node_modules') >= 0 && resource.match(/\.js$/)
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
