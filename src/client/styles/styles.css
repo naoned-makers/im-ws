@@ -1,0 +1,21 @@
+body {
+	background-color: #202020;
+	overflow: hidden;
+}
+
+g:active > path.glow {
+  fill: '#DAF0F6';
+  filter: url(#blur-filter);
+}
+
+.fill-dark {
+  fill: #212121;
+}
+
+.fill-light {
+  fill: #6ECCDD;
+}
+
+.fill-lighter{
+  fill: #DAF0F6;
+}
