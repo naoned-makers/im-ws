@@ -3,6 +3,7 @@ import path from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const PATHS = {
   client: path.join(__dirname, 'src/client'),
@@ -48,6 +49,13 @@ export default {
       title: 'Welcome to DevFest Nantes 2017',
       template: path.resolve(PATHS.client, 'index.html'),
       favicon: path.resolve(PATHS.client, 'favicon.ico')
-    })
+    }),
+    new CopyPlugin([{
+      from: path.join(PATHS.client, 'manifest.json'),
+      to: path.join(PATHS.dist, 'public')
+    }, {
+      from: path.join(PATHS.client, 'images'),
+      to: path.join(PATHS.dist, 'public/images')
+    }])
   ]
 };

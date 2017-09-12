@@ -1,0 +1,31 @@
+{
+  "short_name": "IM WS",
+  "name": "IM WS",
+  "icons": [
+    {
+      "src": "images/logo-48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "images/logo-96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "images/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/logo-400.png",
+      "type": "image/png",
+      "sizes": "400x400"
+    }
+  ],
+  "start_url": "index.html?launcher=true",
+  "background_color": "#212121",
+  "theme_color": "#212121",
+  "display": "standalone",
+  "orientation": "portrait"
+}

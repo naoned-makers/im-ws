@@ -8,6 +8,7 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import BabelMinifyPlugin from 'babel-minify-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import cssnano from 'cssnano';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const PATHS = {
   client: path.join(__dirname, 'src/client'),
@@ -118,6 +119,13 @@ const client = {
       },
       canPrint: false,
     }),
+    new CopyPlugin([{
+      from: path.join(PATHS.client, 'manifest.json'),
+      to: path.join(PATHS.dist, 'public')
+    }, {
+      from: path.join(PATHS.client, 'images'),
+      to: path.join(PATHS.dist, 'public/images')
+    }]),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       minChunks: ({ resource }) => resource && resource.indexOf('node_modules') >= 0 && resource.match(/\.js$/)
